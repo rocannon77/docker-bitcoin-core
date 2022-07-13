@@ -267,3 +267,53 @@ This image is officially supported on Docker version 17.09, with support for old
 [docker-pulls-image]: https://img.shields.io/docker/pulls/ruimarinho/bitcoin-core.svg?style=flat-square
 [docker-size-image]: https://img.shields.io/docker/image-size/ruimarinho/bitcoin-core?style=flat-square
 [docker-stars-image]: https://img.shields.io/docker/stars/ruimarinho/bitcoin-core.svg?style=flat-square
+
+# Deploy with helm
+
+## Install Helmfile
+Go to releases page
+
+https://github.com/helmfile/helmfile/tags
+
+Download release and unpack eg.
+
+```bash
+cd /tmp
+curl -L https://github.com/helmfile/helmfile/releases/download/v0.145.2/helmfile_0.145.2_linux_amd64.tar.gz -o helmfile.tar.gz
+tar xpzf helmfile.tar.gz
+sudo mv helmfile /usr/local/bin
+```
+
+## Helmfile apply requires helm-diff
+
+Install it with
+
+```bash
+helm plugin install https://github.com/databus23/helm-diff
+```
+
+## Apply or Destro release
+We have defined 2 environments: "prod" and "test" (look at helmfile.yaml)
+
+- Values specific for environemnts are in environments/ENV_NAME/values.yaml
+- Bitcoin node config files are under environments/ENV_NAME/bitcoin.conf
+
+All the values are templated from values/values.yaml.gotmpl
+
+To apply environment:
+
+```bash
+helmfile -f helmfile.yaml --environment ENV_NAME apply
+```
+
+
+To destroy environment:
+
+```bash
+helmfile -f helmfile.yaml --environment ENV_NAME destroy
+```
+
+To template charts for specific environment
+```bash
+helmfile --debug -f helmfile.yaml --environment prod template --output-dir ./rendered
+```

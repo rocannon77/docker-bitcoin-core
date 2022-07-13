@@ -18,7 +18,7 @@ deployment:
     args: []
     image:
       repository: {{ .Values.deployment.blue.repository }}
-      tag: {{ .Values.deployment.blue.tag }}
+      tag: {{ .Values.deployment.blue.tag  | quote }}
       pullPolicy: Never
     serviceAccount:
       annotations: {}
@@ -40,7 +40,7 @@ deployment:
     args: []
     image:
       repository: {{ .Values.deployment.green.repository }}
-      tag: {{ .Values.deployment.green.tag }}
+      tag: {{ .Values.deployment.green.tag | quote }}
       pullPolicy: Never
     serviceAccount:
       annotations: {}
