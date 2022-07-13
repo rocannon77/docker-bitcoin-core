@@ -1,0 +1,69 @@
+{{- $envPath := print "../environments/" .Environment.Name "/bitcoin.conf"}}
+deployment:
+  blue:
+    ports:
+    - name: node-tcp
+      containerPort: {{ .Values.deployment.blue.containerPort }}
+      protocol: TCP
+    enabled: true
+    nodeSelector: {}
+    affinity: {}
+    tolerations: []
+    resources: {}
+    podAnnotations: {}
+    imagePullSecrets: []
+    podSecurityContext: {}
+    securityContext: {}
+    command: []
+    args: []
+    image:
+      repository: {{ .Values.deployment.blue.repository }}
+      tag: {{ .Values.deployment.blue.tag }}
+      pullPolicy: Never
+    serviceAccount:
+      annotations: {}
+  green:
+    ports:
+    - name: node-tcp
+      containerPort: {{ .Values.deployment.green.containerPort }}
+      protocol: TCP
+    enabled: false
+    nodeSelector: {}
+    affinity: {}
+    tolerations: []
+    resources: {}
+    podAnnotations: {}
+    imagePullSecrets: []
+    podSecurityContext: {}
+    securityContext: {}
+    command: []
+    args: []
+    image:
+      repository: {{ .Values.deployment.green.repository }}
+      tag: {{ .Values.deployment.green.tag }}
+      pullPolicy: Never
+    serviceAccount:
+      annotations: {}
+
+expose:
+  blue:
+    port: {{ .Values.deployment.blue.containerPort }}
+    nodePort: {{ .Values.deployment.blue.nodePort }}
+  green:
+    port: {{ .Values.deployment.green.containerPort }}
+    nodePort: {{ .Values.deployment.green.nodePort }}
+
+node:
+  volume:
+    blue:
+      reclaimPolicy: Delete
+      capacity: {{ .Values.deployment.blue.capacity }}
+      hostPath: {{ .Values.deployment.blue.hostPath }}
+    green:
+      reclaimPolicy: Delete
+      capacity: {{ .Values.deployment.green.capacity }}
+      hostPath: {{ .Values.deployment.green.hostPath }}
+  data:
+    blue:
+      bitcoin.conf: |-
+        {{ readFile $envPath | nindent 8}}

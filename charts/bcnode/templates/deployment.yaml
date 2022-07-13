@@ -1,0 +1,149 @@
+{{ if .Values.deployment.blue.enabled }}
+{{ $context := dict "root" . "Slot" "blue" }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "k8s-deployment.name" $context }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "k8s.labelset" $context | nindent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "k8s.selectorLabels" $context | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.deployment.blue.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "k8s.selectorLabels" $context | nindent 8 }}
+    spec:
+      {{- with .Values.deployment.blue.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.deployment.blue.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.deployment.blue.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.deployment.blue.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "k8s-service-account.name" $context }}
+      securityContext:
+        {{- toYaml .Values.deployment.blue.podSecurityContext | nindent 8 }}
+      containers:
+      - name: {{ .Chart.Name }}
+        securityContext:
+          {{- toYaml .Values.securityContext | nindent 10 }}
+        image: "{{ .Values.deployment.blue.image.repository }}:{{ .Values.deployment.blue.image.tag | default .Chart.AppVersion }}"
+        imagePullPolicy: {{ .Values.deployment.blue.image.pullPolicy }}
+        {{- with .Values.deployment.blue.command }}
+        command:
+          {{- toYaml . | nindent 8}}
+        {{- end }}
+        {{- with .Values.deployment.blue.args }}
+        args:
+          {{- toYaml . | nindent 8}}
+        {{- end }}
+        ports:
+          {{- .Values.deployment.blue.ports | toYaml | nindent  8}}
+        resources:
+          {{- toYaml .Values.deployment.blue.resources | nindent 12 }}
+        volumeMounts:
+        - name: {{ include "k8s-configmap.name" $context}}
+          mountPath: /home/bitcoin/.bitcoin/bitcoin.conf
+          subPath: bitcoin.conf
+        - name: {{ include "k8s-persistent-volume.name" $context }}
+          mountPath: "/home/bitcoin/.bitcoin"
+      volumes:
+      - name: {{ include "k8s-configmap.name" $context}}
+        configMap:
+          name: {{ include "k8s-configmap.name" $context}}
+      - name: {{ include "k8s-persistent-volume.name" $context }}
+        persistentVolumeClaim:
+          claimName: {{ include "k8s-persistent-volume-claim.name" $context }}
+{{- end }}
+---
+{{ if .Values.deployment.green.enabled }}
+{{ $context := dict "root" . "Slot" "green" }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "k8s-deployment.name" $context }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "k8s.labelset" $context | nindent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "k8s.selectorLabels" $context | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.deployment.green.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "k8s.selectorLabels" $context | nindent 8 }}
+    spec:
+      {{- with .Values.deployment.green.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.deployment.green.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.deployment.green.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.deployment.green.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "k8s-service-account.name" $context }}
+      securityContext:
+        {{- toYaml .Values.deployment.green.podSecurityContext | nindent 8 }}
+      containers:
+      - name: {{ .Chart.Name }}
+        securityContext:
+          {{- toYaml .Values.securityContext | nindent 10 }}
+        image: "{{ .Values.deployment.green.image.repository }}:{{ .Values.deployment.green.image.tag | default .Chart.AppVersion }}"
+        imagePullPolicy: {{ .Values.deployment.green.image.pullPolicy }}
+        {{- with .Values.deployment.green.command }}
+        command:
+          {{- toYaml . | nindent 8}}
+        {{- end }}
+        {{- with .Values.deployment.green.args }}
+        args:
+          {{- toYaml . | nindent 8}}
+        {{- end }}
+        ports:
+          {{- .Values.deployment.green.ports | toYaml | nindent  8}}
+        resources:
+          {{- toYaml .Values.deployment.green.resources | nindent 12 }}
+        volumeMounts:
+        - name: {{ include "k8s-configmap.name" $context}}
+          mountPath: /home/bitcoin/.bitcoin/bitcoin.conf
+          subPath: bitcoin.conf
+        - name: {{ include "k8s-persistent-volume.name" $context }}
+          mountPath: "/home/bitcoin/.bitcoin"
+      volumes:
+      - name: {{ include "k8s-configmap.name" $context}}
+        configMap:
+          name: {{ include "k8s-configmap.name" $context}}
+      - name: {{ include "k8s-persistent-volume.name" $context }}
+        persistentVolumeClaim:
+          claimName: {{ include "k8s-persistent-volume-claim.name" $context }}
+{{- end }}

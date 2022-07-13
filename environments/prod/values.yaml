@@ -1,0 +1,15 @@
+deployment:
+  blue:
+    containerPort: 8333
+    repository: alt-btc-node
+    tag: 1.0
+    nodePort: 30001
+    hostPath: /datadir/node-data-prod/blue
+    capacity: 1Ti
+  green:
+    containerPort: 8333
+    repository: alt-btc-node
+    tag: 1.0
+    nodePort: 30001
+    hostPath: /datadir/node-data-prod/green
+    capacity: 1Ti

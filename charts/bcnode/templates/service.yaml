@@ -1,0 +1,38 @@
+{{ if .Values.deployment.blue.enabled }}
+{{ $context := dict "root" . "Slot" "blue" }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "k8s-service.name" $context }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "k8s.labelset" $context | nindent 4 }}
+spec:
+  type: NodePort
+  ports:
+  - name: bcc-nodeport
+    port: {{ .Values.expose.blue.port }}
+    targetPort: {{ .Values.expose.blue.port }}
+    nodePort: {{ .Values.expose.blue.nodePort }}
+  selector:
+    {{- include "k8s.selectorLabels" $context | nindent 4 }}
+{{- end  }}
+---
+{{ if .Values.deployment.green.enabled }}
+{{ $context := dict "root" . "Slot" "green" }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "k8s-service.name" $context }}
+  labels:
+    {{- include "k8s.labelset" $context | nindent 4 }}
+spec:
+  type: NodePort
+  ports:
+  - name: bcc-nodeport
+    port: {{ .Values.expose.green.port }}
+    targetPort: {{ .Values.expose.green.port }}
+    nodePort: {{ .Values.expose.green.nodePort }}
+  selector:
+    {{- include "k8s.selectorLabels" $context | nindent 4 }}
+{{- end }}

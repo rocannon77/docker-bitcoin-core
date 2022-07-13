@@ -1,0 +1,25 @@
+{{ if .Values.deployment.blue.enabled }}
+{{ $context := dict "root" . "Slot" "blue" }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "k8s-configmap.name" $context}}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "k8s.labelset" $context | nindent 4 }}
+data:
+{{ .Values.node.data.blue | toYaml | indent 2 }}
+{{- end }}
+---
+{{ if .Values.deployment.green.enabled }}
+{{ $context := dict "root" . "Slot" "green" }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "k8s-configmap.name" $context}}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "k8s.labelset" $context | nindent 3 }}
+data:
+{{ .Values.node.data.blue | toYaml | indent 2 }}
+{{- end }}

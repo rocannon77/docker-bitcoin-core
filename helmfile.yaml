@@ -1,0 +1,31 @@
+helmDefaults:
+  wait: false
+  timeout: 600
+  recreatePods: true
+  force: true
+  createNamespace: true
+
+environments:
+  default:
+    values:
+    - environments/test/values.yaml
+  prod:
+    values:
+    - environments/prod/values.yaml
+  test:
+    values:
+    - environments/test/values.yaml
+
+releases:
+  - name: bcnode-{{ .Environment.Name }}
+    namespace: bcnode-{{ .Environment.Name }}
+    chart: charts/bcnode
+    installed: true
+    atomic: true
+    cleanupOnFail: true
+    missingFileHandler: Error
+    values:
+    - values/values.yaml.gotmpl
+
+
+

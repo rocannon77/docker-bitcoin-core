@@ -1,0 +1,79 @@
+{{ if .Values.deployment.blue.enabled }}
+{{ $context := dict "root" . "Slot" "blue" }}
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{ include "k8s-persistent-volume.name" $context }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "k8s.labelset" $context | nindent 4 }}
+spec:
+  storageClassName: standard
+  persistentVolumeReclaimPolicy: {{ .Values.node.volume.blue.reclaimPolicy }}
+  claimRef:
+    name: {{ include "k8s-persistent-volume-claim.name" $context }}
+    namespace: {{ .Release.Namespace }}
+  accessModes:
+    - ReadWriteOnce
+  capacity:
+    storage: {{ .Values.node.volume.blue.capacity }}
+  hostPath:
+    path: {{ .Values.node.volume.blue.hostPath }}
+    type: DirectoryOrCreate
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "k8s-persistent-volume-claim.name" $context }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "k8s.labelset" $context | nindent 4 }}
+spec:
+  storageClassName:  standard
+  volumeName: {{ include "k8s-persistent-volume.name" $context }}
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.node.volume.blue.capacity }}
+{{- end }}
+---
+{{ if .Values.deployment.green.enabled }}
+{{ $context := dict "root" . "Slot" "green" }}
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{ include "k8s-persistent-volume.name" $context }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "k8s.labelset" $context | nindent 4 }}
+spec:
+  storageClassName: standard
+  persistentVolumeReclaimPolicy: {{ .Values.node.volume.green.reclaimPolicy }}
+  claimRef:
+    name: {{ include "k8s-persistent-volume-claim.name" $context }}
+    namespace: {{ .Release.Namespace }}
+  accessModes:
+    - ReadWriteOnce
+  capacity:
+    storage: {{ .Values.node.volume.green.capacity }}
+  hostPath:
+    path: {{ .Values.node.volume.green.hostPath }}
+    type: DirectoryOrCreate
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "k8s-persistent-volume-claim.name" $context }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "k8s.labelset" $context | nindent 4 }}
+spec:
+  storageClassName:  standard
+  volumeName: {{ include "k8s-persistent-volume.name" $context }}
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.node.volume.green.capacity }}
+{{- end }}
