@@ -270,6 +270,11 @@ This image is officially supported on Docker version 17.09, with support for old
 
 # Deploy with helm
 
+## Install Helm
+Go to Helm's homepage
+
+https://helm.sh/docs/intro/install/
+
 ## Install Helmfile
 Go to releases page
 
@@ -292,7 +297,9 @@ Install it with
 helm plugin install https://github.com/databus23/helm-diff
 ```
 
-## Apply or Destro release
+Be warned - this plugin gets installed only for current user - into `$HOME/.local/share/helm/plugins/`. Each user must install it separately.
+
+## Apply or Destroy a release
 We have defined 2 environments: "prod" and "test" (look at helmfile.yaml)
 
 - Values specific for environemnts are in environments/ENV_NAME/values.yaml
@@ -306,14 +313,13 @@ To apply environment:
 helmfile -f helmfile.yaml --environment ENV_NAME apply
 ```
 
-
 To destroy environment:
 
 ```bash
 helmfile -f helmfile.yaml --environment ENV_NAME destroy
 ```
 
-To template charts for specific environment
+If one wants to see Helm charts for an environment, one can template charts for specific environment
 ```bash
-helmfile --debug -f helmfile.yaml --environment prod template --output-dir ./rendered
+helmfile --debug -f helmfile.yaml --environment ENV_NAME template --output-dir ./rendered
 ```
